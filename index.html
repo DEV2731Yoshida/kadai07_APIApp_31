@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ChatGPT API デモ</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 90vh;
+      }
+      textarea,button,pre {
+        width: 100%;
+        margin-top: 10px;
+      }
+      textarea {
+        height: 150px;
+      }
+      pre {
+        background-color: #f4f4f4;
+        padding: 10px;
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <textarea id="inputText" placeholder="【外来種の特徴解説AI】ここに質問を入力してください"></textarea>
+      <button onclick="submitPrompt()">送信</button>
+      <pre id="outputText">応答がここに表示されます。</pre>
+    </div>
+    <script>
+      async function submitPrompt() {
+        const prompt = document.getElementById("inputText").value;
+        const outputElement = document.getElementById("outputText");
+        try {
+          const URL = "https://api.openai.com/v1/chat/completions";
+          const KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX";  //ここと
+          const response = await fetch(URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer XXXXXXXXXXXXXXXXXXXXXXXXXXXXX`, //ここ
+            },
+            body: JSON.stringify({
+              model: "gpt-3.5-turbo",
+              messages: [{ role: "user", content: prompt }],
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          outputElement.textContent = data.choices[0].message.content; // APIの応答に応じて適切なパスを選択
+        } catch (e) {
+          outputElement.textContent = "Error: " + e.message;
+        }
+      }
+    </script>
+  </body>
+</html>
